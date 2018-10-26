@@ -4,7 +4,7 @@
 
 For k8s workshops I prefer to create a dedicated pod for each participant, with all the tools preinstalled.
 
-I wanted to provide an ssh access directly into the pod, without creating real ssh users on the cluster nodes.
+I wanted to provide an ssh access directly into the pod, without creating real ssh users on the cluster nodes. A containerised version of [gliderlabs/sshfront](https://github.com/gliderlabs/sshfront) is used.
 
 ## Deployment
 
