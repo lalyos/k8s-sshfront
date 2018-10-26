@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: config-reader
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: crb-config-reader-full
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: config-reader
+  namespace: default
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: sshfront
+  name: sshfront
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: sshfront
+  template:
+    metadata:
+      labels:
+        run: sshfront
+    spec:
+      containers:
+      - image: lalyos/k8s-sshfront
+        name: sshfront
+        ports:
+        - containerPort: 22
+          protocol: TCP
+      restartPolicy: Always
+      serviceAccount: config-reader
+      serviceAccountName: config-reader
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: sshfront
+  name: sshfront
+spec:
+  ports:
+  - port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    run: sshfront
+  type: NodePort
