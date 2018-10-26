@@ -18,6 +18,17 @@ The manifest file will create:
 ```
 kubectl apply -f https://raw.githubusercontent.com/lalyos/k8s-sshfront/master/sshfront.yaml
 ```
+## External ssh access
+
+After successfull deployment, you can use the NodePort on any node's externalIP.
+This command will print the ssh command:
+```
+$ echo ssh $(kubectl get no -o jsonpath='{.items[0].status.addresses[?(.type=="ExternalIP")].address}') \
+  -p $(kubectl get svc sshfront -o jsonpath='{.spec.ports[0].nodePort}') \
+  -l PODNAME
+
+ssh 35.199.111.25 -p 30174 -l PODNAME
+```
 
 ## Authentication
 
@@ -26,8 +37,12 @@ a **ConfigMap** named `ssh` under the key named `key`.
 
 ## helper function
 
-This function can be used by the user to "self service". It expects that
-the user can jump into the pod already, probably via browser (see: todo)
+This function can be used by the user to "self service":
+- get public key by github user id: `ssh-pubkey <GITHUB_USERNAME>` 
+- get public key from stdin: `<SOME_COMMAND> | ssh-pubkey`
+
+It expects that the user can jump into the pod already, probably via browser (see: todo)
+
 ```
 ssh-pubkey() {
   declare githubUser=${1}
