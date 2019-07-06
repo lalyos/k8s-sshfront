@@ -35,6 +35,13 @@ spec:
       containers:
       - image: lalyos/k8s-sshfront
         name: sshfront
+        command:
+          - sshfront
+          - -d
+          - -e
+          - -a=/ssh-auth.sh
+          - -k=/tmp/id_rsa
+          - /kube-exec.sh
         ports:
         - containerPort: 22
           protocol: TCP
