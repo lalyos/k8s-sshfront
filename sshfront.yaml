@@ -6,7 +6,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: crb-config-reader-full
+  name: crb-config-reader-full-default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -15,6 +15,19 @@ subjects:
 - kind: ServiceAccount
   name: config-reader
   namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: crb-config-reader-full-workshop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: config-reader
+  namespace: workshop
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -34,6 +47,12 @@ spec:
     spec:
       containers:
       - image: lalyos/k8s-sshfront
+        env:
+        - name: NS
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         name: sshfront
         command:
           - sshfront
